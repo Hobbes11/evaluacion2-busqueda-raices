@@ -1,7 +1,17 @@
 from pathlib import Path
 import numpy as np
 import csv
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 np.seterr(all="ignore")
+
+"""
+Código comun entre los seis scripts de métodos:
+    - Las seis funciones de prueba con sus derivadas, su g(x) y sus condiciones iniciales.
+    - CSV del método y actualización de resumen.csv.
+    - 13 gráficos.
+"""
 
 TOL = 1e-6
 MAX_ITER = 100
@@ -119,3 +129,120 @@ def guardar(metodo, resultados):
         escritor = csv.DictWriter(archivo, fieldnames=columnas, lineterminator="\n")
         escritor.writeheader()
         escritor.writerows(filas_nuevas)
+    graficar_todo()
+
+#------------------------------------------------
+#Graficos
+#------------------------------------------------
+COLORES = {"Bisección": "blue", "Falsa posición": "orange", "Punto fijo": "green",
+           "Secante": "red", "Newton-Raphson": "purple", "Newton mejorado": "brown"}
+
+def graficar_todo():
+    CARPETA_GRAFICOS.mkdir(parents=True, exist_ok=True)
+    resumen = leer_csv(RESUMEN)
+    for fun in FUNCIONES:
+        grafica_funcion(fun, resumen)
+        grafica_convergencia(fun, resumen)
+    grafica_resumen(resumen)
+
+def grafica_funcion(fun, resumen):
+    f = fun["f"]
+    a, b = fun["intervalo"]
+    x0 = fun["x0"]
+    x = np.linspace(*fun["rango"], 600)
+    producto = f(a) * f(b)
+    plt.figure(figsize=(8, 5))
+    plt.plot(x, f(x), color="blue", label=f"f(x) = {fun['nombre']}")
+    plt.axhline(0, color="black")  # eje y = 0
+    plt.axvspan(a, b, color="yellow", alpha=0.3, label=f"intervalo [{a}, {b}]")
+    plt.plot(x0, f(x0), "o", color="black", label=f"estimación inicial x0 = {x0}")
+    if producto < 0:
+        signo = "Hay cambio de signo"
+    else:
+        signo = "No hay cambio de signo"
+    plt.plot([a, b], [f(a), f(b)], "o", color="green", label=f"f(a)·f(b) = {producto:.4g}: {signo}")
+    convergidos = [r for r in resumen if r["funcion"] == fun["nombre"] and r["estado"] == "converge"]
+    titulo = f"{fun['categoria']}: f(x) = {fun['nombre']}"
+    if convergidos:
+        raiz = float(convergidos[-1]["raiz_aproximada"])
+        etiqueta = f"raíz ≈ {raiz:.6f}"
+        if producto > 0:
+            etiqueta += " (la curva toca el eje x sin cruzarlo)"
+        plt.plot(raiz, 0, "o", color="red", label=etiqueta)
+    else:
+        titulo += "\n(ningún método convergió: no se marca la raíz)"
+    plt.title(titulo)
+    plt.xlabel("x")
+    plt.ylabel("f(x)")
+    plt.grid(alpha=0.3)
+    plt.legend(fontsize=8)
+    plt.savefig(CARPETA_GRAFICOS / f"funcion_{fun['clave']}.png", dpi=130)
+    plt.close()
+
+def grafica_convergencia(fun, resumen):
+    plt.figure(figsize=(8, 5))
+    no_aplican = []
+    for fila in resumen:
+        if fila["funcion"] != fun["nombre"]:
+            continue
+        metodo = fila["metodo"]
+        if fila["estado"] == "no aplica":
+            no_aplican.append(metodo)
+            continue
+        datos = [d for d in leer_csv(CARPETA_DATOS / ARCHIVOS[metodo])
+                 if d["funcion"] == fun["nombre"] and d["error"] != ""]
+        if not datos:
+            continue
+        n = [int(d["iteracion"]) for d in datos]
+        error = [max(float(d["error"]), 1e-17) for d in datos]
+        if fila["estado"] == "converge":
+            etiqueta = f"{metodo} (converge, {fila['iteraciones']} it.)"
+        else:
+            etiqueta = f"{metodo} (no converge)"
+        plt.plot(n, error, "o-", markersize=4, color=COLORES[metodo], label=etiqueta)
+    plt.axhline(TOL, color="gray", linestyle=":", label=f"tolerancia {TOL:g}")
+    plt.yscale("log")
+    titulo = f"Convergencia: {fun['categoria']}, f(x) = {fun['nombre']}"
+    if no_aplican:
+        titulo += "\nNo aplican (sin cambio de signo): " + ", ".join(no_aplican)
+    plt.title(titulo, fontsize=10)
+    plt.xlabel("iteración n")
+    plt.ylabel("error |x_n - x_(n-1)|  (escala log)")
+    plt.grid(alpha=0.3)
+    plt.legend(fontsize=8)
+    plt.savefig(CARPETA_GRAFICOS / f"convergencia_{fun['clave']}.png", dpi=130)
+    plt.close()
+
+def grafica_resumen(resumen):
+    filas = {(f["metodo"], f["funcion"]): f for f in resumen}
+    ancho = 0.13
+    plt.figure(figsize=(12, 6))
+    for j, metodo in enumerate(METODOS):
+        for i, fun in enumerate(FUNCIONES):
+            fila = filas.get((metodo, fun["nombre"]))
+            if fila is None:
+                continue
+            x = i + (j - 2.5) * ancho
+            if fila["estado"] == "no aplica":
+                plt.text(x, 1.1, "N/A", rotation=90, ha="center", color=COLORES[metodo])
+                continue
+            n = max(int(fila["iteraciones"]), 0.5)
+            if fila["estado"] == "converge":
+                plt.bar(x, n, ancho, color=COLORES[metodo])
+            else:
+                plt.bar(x, n, ancho, color=COLORES[metodo], hatch="///")
+            plt.text(x, n * 1.08, str(int(n)), ha="center", fontsize=8)
+    for metodo in METODOS:
+        plt.bar(0, 0, color=COLORES[metodo], label=metodo)
+    plt.bar(0, 0, color="white", hatch="///", label="no converge (con rayas)")
+    plt.bar(0, 0, color="white", label="N/A = no aplica")
+    plt.yscale("log")
+    plt.ylim(0.9, 300)
+    plt.xticks(range(len(FUNCIONES)), [f"{f['categoria']}\n{f['nombre']}" for f in FUNCIONES], fontsize=8)
+    plt.xlabel("función")
+    plt.ylabel("iteraciones (escala log)")
+    plt.title(f"Iteraciones por método y función (tolerancia {TOL:g}, máximo {MAX_ITER})")
+    plt.grid(alpha=0.3, axis="y")
+    plt.legend(fontsize=8, ncol=3, loc="upper left")
+    plt.savefig(CARPETA_GRAFICOS / "resumen_iteraciones.png", dpi=130)
+    plt.close()

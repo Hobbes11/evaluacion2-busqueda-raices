@@ -2,6 +2,15 @@ import numpy as np
 import comun
 from comun import MAX_ITER
 
+'''
+Newton-Raphson
+Desde una estimación x0 se sigue la tangente de f hasta el eje x:
+            x_(n+1) = x_n - f(x_n) / f'(x_n)
+Orden de convergencia 2 en raíces simples. No necesita cambio de signo, pero falla si f'(x_n) = 0,
+si la estimación sale del dominio de f, o si x0 está lejos de la raíz.
+En una raíz doble, f'(raíz) = 0 y la convergencia se vuelve solo lineal.
+'''
+
 def newton(f, df, x0):
     x = np.float64(x0)
     fx = f(x)
@@ -28,4 +37,3 @@ if __name__ == "__main__":
         estado, filas, obs = newton(fun["f"], fun["df"], fun["x0"])
         resultados.append((fun, f"x0 = {fun['x0']}", estado, filas, obs))
     comun.guardar("Newton-Raphson", resultados)
-    

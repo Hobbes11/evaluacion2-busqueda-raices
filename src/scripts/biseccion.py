@@ -2,6 +2,14 @@ import numpy as np
 import comun
 from comun import MAX_ITER, TOL
 
+'''
+Bisección
+Busca una raíz de f(x) = 0 en un intervalo [a, b] donde f cambia de signo (f(a)·f(b) < 0).
+En cada paso toma el punto medio c = (a + b)/2 y se queda con la mitad donde sigue el cambio
+de signo. El intervalo se reduce a la mitad en cada iteración (convergencia lineal).
+Si no hay cambio de signo, el método no aplica.
+'''
+
 def biseccion(f, a, b):
     a, b = np.float64(a), np.float64(b)
     fa, fb = f(a), f(b)
@@ -32,4 +40,3 @@ if __name__ == "__main__":
         estado, filas, obs = biseccion(fun["f"], a, b)
         resultados.append((fun, f"[{a}, {b}]", estado, filas, obs))
     comun.guardar("Bisección", resultados)
-    

@@ -2,6 +2,14 @@ import numpy as np
 import comun
 from comun import MAX_ITER
 
+'''
+Newton-Raphson mejorado
+Es Newton aplicado a u(x) = f(x)/f'(x), que tiene la misma raíz que f pero siempre simple:
+            x_(n+1) = x_n - f(x_n)·f'(x_n) / ( f'(x_n)^2 - f(x_n)·f''(x_n) )
+Mantiene orden 2 también en raíces múltiples.
+Necesita f, f' y f''. Falla si el denominador es 0 o si la estimación sale del dominio.
+'''
+
 def newton_mejorado(f, df, d2f, x0):
     x = np.float64(x0)
     fx = f(x)
@@ -29,4 +37,3 @@ if __name__ == "__main__":
         estado, filas, obs = newton_mejorado(fun["f"], fun["df"], fun["d2f"], fun["x0"])
         resultados.append((fun, f"x0 = {fun['x0']}", estado, filas, obs))
     comun.guardar("Newton mejorado", resultados)
-    

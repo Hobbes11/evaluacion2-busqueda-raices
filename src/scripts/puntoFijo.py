@@ -2,6 +2,14 @@ import numpy as np
 import comun
 from comun import MAX_ITER
 
+'''
+Punto fijo
+Se reescribe f(x) = 0 como x = g(x) y se itera x_(n+1) = g(x_n) desde una estimación x0.
+Converge si |g'(raíz)| < 1, cuanto más pequeño, más rápido. Si |g'(raíz)| >= 1 no hay contracción
+y la iteración puede diverger o avanzar muy lento. No necesita cambio de signo.
+Cada función usa un g(x) elegido para que |g'(raíz)| < 1.
+'''
+
 def punto_fijo(f, g, x0):
     x = np.float64(x0)
     filas = [(0, x, f(x))]
@@ -28,4 +36,3 @@ if __name__ == "__main__":
             nota += " (cerca de 1: contracción muy débil)"
         resultados.append((fun, f"x0 = {fun['x0']}", estado, filas, nota + ("; " + obs if obs else "")))
     comun.guardar("Punto fijo", resultados)
-    

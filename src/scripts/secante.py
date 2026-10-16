@@ -2,6 +2,15 @@ import numpy as np
 import comun
 from comun import MAX_ITER
 
+'''
+Secante
+Como Newton, pero sin derivada: aproxima f' con la recta que pasa por los dos últimos puntos
+            x_(n+1) = x_n - f(x_n)·(x_n - x_(n-1)) / (f(x_n) - f(x_(n-1)))
+Necesita dos valores iniciales x0 y x1, no necesita cambio de signo.
+Orden de convergencia = 1.618 en raíces simples. Falla si f(x_n) = f(x_(n-1)) (división por 0).
+Numeración: x0 y x1 son datos, la primera aproximación calculada es x2.
+'''
+
 def secante(f, x0, x1):
     x_viejo, x = np.float64(x0), np.float64(x1)
     f_viejo, fx = f(x_viejo), f(x)
@@ -27,4 +36,3 @@ if __name__ == "__main__":
         estado, filas, obs = secante(fun["f"], fun["x0"], fun["x1"])
         resultados.append((fun, f"x0 = {fun['x0']}, x1 = {fun['x1']}", estado, filas, obs))
     comun.guardar("Secante", resultados)
-    
