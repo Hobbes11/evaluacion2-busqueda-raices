@@ -28,4 +28,5 @@ if __name__ == "__main__":
     for fun in comun.FUNCIONES:
         estado, filas, obs = newton_mejorado(fun["f"], fun["df"], fun["d2f"], fun["x0"])
         resultados.append((fun, f"x0 = {fun['x0']}", estado, filas, obs))
-        
+    comun.guardar("Newton mejorado", resultados)
+    

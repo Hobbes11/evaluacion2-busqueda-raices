@@ -27,4 +27,5 @@ if __name__ == "__main__":
         if dg > 0.9:
             nota += " (cerca de 1: contracción muy débil)"
         resultados.append((fun, f"x0 = {fun['x0']}", estado, filas, nota + ("; " + obs if obs else "")))
-        
+    comun.guardar("Punto fijo", resultados)
+    

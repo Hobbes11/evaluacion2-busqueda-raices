@@ -1,0 +1,37 @@
+metodo,funcion,condicion_inicial,estado,iteraciones,raiz_aproximada,error_final,residuo_final,observacion
+Bisección,x^3 - x - 2,"[1, 2]",converge,20,1.5213804245,9.53674316406e-07,4.26582940483e-06,
+Bisección,(x - 2)^2,"[1, 3]",no aplica,,,,,f(a)·f(b) = 1 > 0: no hay cambio de signo
+Bisección,ln(x) + x - 4,"[2, 3]",converge,19,2.9262714386,1.90734863281e-06,5.046993099e-07,
+Bisección,exp(-x) - x,"[0, 1]",converge,20,0.567143440247,9.53674316406e-07,2.3481572653e-07,
+Bisección,cos(x) - x,"[0, 1]",converge,20,0.739085197449,9.53674316406e-07,1.07502076685e-07,
+Bisección,sqrt(x) - cos(x),"[0.1, 1]",converge,20,0.641714382172,8.58306884788e-07,1.38153665175e-08,
+Falsa posición,x^3 - x - 2,"[1, 2]",converge,12,1.52137946179,6.03386263176e-07,1.45631359638e-06,
+Falsa posición,(x - 2)^2,"[1, 3]",no aplica,,,,,f(a)·f(b) = 1 > 0: no hay cambio de signo
+Falsa posición,ln(x) + x - 4,"[2, 3]",converge,4,2.92627148182,8.13809342359e-06,5.6269372628e-07,
+Falsa posición,exp(-x) - x,"[0, 1]",converge,7,0.567143376034,6.84341181056e-07,1.34185290768e-07,
+Falsa posición,cos(x) - x,"[0, 1]",converge,5,0.739084782449,6.65156889734e-06,5.8704654915e-07,
+Falsa posición,sqrt(x) - cos(x),"[0.1, 1]",converge,4,0.641713839175,1.07790442365e-05,6.50125330348e-07,
+Punto fijo,x^3 - x - 2,x0 = 1.0,converge,8,1.52137960424,6.09626446213e-07,6.09626445769e-07,g(x) = (x + 2)^(1/3); |g'(x_n)| = 0.144 en la última aproximación
+Punto fijo,(x - 2)^2,x0 = 1.2,no converge,100,,,,"g(x) = x + (x - 2)^2; |g'(x_n)| = 0.982 en la última aproximación (cerca de 1: contracción muy débil); se alcanzó el máximo de iteraciones; última diferencia = 8.71e-05, último residuo = 8.54e-05"
+Punto fijo,ln(x) + x - 4,x0 = 2.0,converge,14,2.92627074736,1.23710911426e-06,4.2275953227e-07,g(x) = 4 - ln(x); |g'(x_n)| = 0.342 en la última aproximación
+Punto fijo,exp(-x) - x,x0 = 0.0,converge,25,0.567143748099,1.26469810435e-06,7.17265169592e-07,g(x) = exp(-x); |g'(x_n)| = 0.567 en la última aproximación
+Punto fijo,cos(x) - x,x0 = 0.0,converge,34,0.739084549575,1.4500729173e-06,9.76786711848e-07,g(x) = cos(x); |g'(x_n)| = 0.674 en la última aproximación
+Punto fijo,sqrt(x) - cos(x),x0 = 0.5,converge,4,0.641714310926,2.86377186876e-06,7.32995526498e-08,g(x) = (x + cos(x)^2) / 2; |g'(x_n)| = 0.021 en la última aproximación
+Secante,x^3 - x - 2,"x0 = 1.0, x1 = 1.5",converge,5,1.52137970708,1.79925894339e-06,1.61980562297e-09,
+Secante,(x - 2)^2,"x0 = 1.2, x1 = 1.7",converge,14,1.99935397039,0.000399266557557,4.17354256597e-07,
+Secante,ln(x) + x - 4,"x0 = 2.0, x1 = 2.5",converge,4,2.92627060734,0.000458685270243,6.10628720921e-07,
+Secante,exp(-x) - x,"x0 = 0.0, x1 = 0.5",converge,4,0.567143164298,9.2359742188e-05,1.97634945964e-07,
+Secante,cos(x) - x,"x0 = 0.0, x1 = 0.5",converge,5,0.739085175086,5.10318941956e-05,7.0075886538e-08,
+Secante,sqrt(x) - cos(x),"x0 = 0.5, x1 = 1.0",converge,4,0.64171462198,0.00030350115533,3.07037012259e-07,
+Newton-Raphson,x^3 - x - 2,x0 = 1.0,converge,5,1.52137970973,6.17554019886e-05,1.74068635062e-08,
+Newton-Raphson,(x - 2)^2,x0 = 1.2,converge,10,1.99921875,0.00078125,6.103515625e-07,
+Newton-Raphson,ln(x) + x - 4,x0 = 2.0,converge,3,2.92627106166,0.000134534787624,1.05690656227e-09,
+Newton-Raphson,exp(-x) - x,x0 = 0.0,converge,3,0.567143165035,0.000832161837644,1.96480471781e-07,
+Newton-Raphson,cos(x) - x,x0 = 0.0,converge,4,0.739085133385,2.77575260776e-05,2.84720580446e-10,
+Newton-Raphson,sqrt(x) - cos(x),x0 = 0.5,converge,2,0.641714866792,0.0019607650137,6.06377326351e-07,
+Newton mejorado,x^3 - x - 2,x0 = 1.0,converge,5,1.52137970673,9.57878259533e-06,4.18782786227e-10,
+Newton mejorado,(x - 2)^2,x0 = 1.2,converge,1,2,0.8,0,
+Newton mejorado,ln(x) + x - 4,x0 = 2.0,converge,3,2.92627106773,0.000348697254368,7.09784142572e-09,
+Newton mejorado,exp(-x) - x,x0 = 0.0,converge,3,0.567143767908,0.00162526546861,7.48308293441e-07,
+Newton mejorado,cos(x) - x,x0 = 0.0,converge,4,0.739085132165,6.89468646653e-05,1.75693770643e-09,
+Newton mejorado,sqrt(x) - cos(x),x0 = 0.5,converge,2,0.641714256253,0.000944490681154,1.40150258954e-07,

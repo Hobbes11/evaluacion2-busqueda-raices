@@ -27,4 +27,5 @@ if __name__ == "__main__":
     for fun in comun.FUNCIONES:
         estado, filas, obs = newton(fun["f"], fun["df"], fun["x0"])
         resultados.append((fun, f"x0 = {fun['x0']}", estado, filas, obs))
-        
+    comun.guardar("Newton-Raphson", resultados)
+    

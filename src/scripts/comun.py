@@ -1,10 +1,24 @@
 from pathlib import Path
 import numpy as np
+import csv
 np.seterr(all="ignore")
 
 TOL = 1e-6
 MAX_ITER = 100
 
+SRC = Path(__file__).resolve().parents[1]
+CARPETA_DATOS = SRC / "data"
+CARPETA_GRAFICOS = SRC / "assets"
+RESUMEN = CARPETA_DATOS / "resumen.csv"
+METODOS = ["Bisección", "Falsa posición", "Punto fijo", "Secante",
+           "Newton-Raphson", "Newton mejorado"]
+ARCHIVOS = {"Bisección": "biseccion.csv", "Falsa posición": "falsa_posicion.csv",
+            "Punto fijo": "punto_fijo.csv", "Secante": "secante.csv",
+            "Newton-Raphson": "newton_raphson.csv", "Newton mejorado": "newton_mejorado.csv"}
+
+#------------------------------------------------
+#Funciones
+#------------------------------------------------
 FUNCIONES = [
     {"clave": "polinomica_simple", "categoria": "Polinómica (raíz simple)", "nombre": "x^3 - x - 2",
      "f": lambda x: x**3 - x - 2,
@@ -55,3 +69,53 @@ def cumple_criterio(x_nuevo, x_viejo, f_nuevo):
 
 def valido(x, fx):
     return bool(np.isfinite(x) and np.isfinite(fx) and abs(x) < 1e12)
+
+#------------------------------------------------
+#CSV
+#------------------------------------------------
+def numero(v):
+    return f"{float(v):.12g}"
+
+def leer_csv(ruta):
+    if not ruta.exists():
+        return []
+    with open(ruta, newline="", encoding="utf-8") as archivo:
+        return list(csv.DictReader(archivo))
+
+def guardar(metodo, resultados):
+    CARPETA_DATOS.mkdir(parents=True, exist_ok=True)
+    filas_metodo, filas_resumen = [], []
+    for fun, condicion, estado, filas, obs in resultados:
+        errores = [None] + [abs(filas[i][1] - filas[i - 1][1]) for i in range(1, len(filas))]
+        for (n, x, fx), error in zip(filas, errores):
+            filas_metodo.append([fun["nombre"], n, numero(x), numero(fx), "" if error is None else numero(error), numero(abs(fx))])
+
+        iteraciones = filas[-1][0] if filas else ""
+        raiz = error_final = residuo_final = ""
+        if estado == "converge":
+            raiz = numero(filas[-1][1])
+            error_final = "" if errores[-1] is None else numero(errores[-1])
+            residuo_final = numero(abs(filas[-1][2]))
+        elif estado == "no converge" and len(filas) > 1:
+            obs = (obs + "; " if obs else "") + (
+                f"última diferencia = {errores[-1]:.2e}, último residuo = {abs(filas[-1][2]):.2e}")
+        filas_resumen.append({"metodo": metodo, "funcion": fun["nombre"],
+                              "condicion_inicial": condicion, "estado": estado,
+                              "iteraciones": iteraciones, "raiz_aproximada": raiz,
+                              "error_final": error_final, "residuo_final": residuo_final,
+                              "observacion": obs})
+        print(f"{fun['nombre']:18s} {condicion:12s} {estado:12s} iteraciones:{str(iteraciones):>3s}  {obs}")
+
+    with open(CARPETA_DATOS / ARCHIVOS[metodo], "w", newline="", encoding="utf-8") as archivo:
+        escritor = csv.writer(archivo, lineterminator="\n")
+        escritor.writerow(["funcion", "iteracion", "x_n", "f_x", "error", "residuo"])
+        escritor.writerows(filas_metodo)
+
+    columnas = ["metodo", "funcion", "condicion_inicial", "estado", "iteraciones",
+                "raiz_aproximada", "error_final", "residuo_final", "observacion"]
+    filas_nuevas = [f for f in leer_csv(RESUMEN) if f["metodo"] != metodo] + filas_resumen
+    filas_nuevas.sort(key=lambda f: METODOS.index(f["metodo"]))  # orden estable: no mezcla funciones
+    with open(RESUMEN, "w", newline="", encoding="utf-8") as archivo:
+        escritor = csv.DictWriter(archivo, fieldnames=columnas, lineterminator="\n")
+        escritor.writeheader()
+        escritor.writerows(filas_nuevas)

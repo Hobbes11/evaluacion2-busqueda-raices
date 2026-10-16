@@ -31,4 +31,5 @@ if __name__ == "__main__":
         a, b = fun["intervalo"]
         estado, filas, obs = biseccion(fun["f"], a, b)
         resultados.append((fun, f"[{a}, {b}]", estado, filas, obs))
-        
+    comun.guardar("Bisección", resultados)
+    

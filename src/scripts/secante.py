@@ -26,4 +26,5 @@ if __name__ == "__main__":
     for fun in comun.FUNCIONES:
         estado, filas, obs = secante(fun["f"], fun["x0"], fun["x1"])
         resultados.append((fun, f"x0 = {fun['x0']}, x1 = {fun['x1']}", estado, filas, obs))
-        
+    comun.guardar("Secante", resultados)
+    
